@@ -32,6 +32,7 @@ export function startAudioRecording(
     .start()
     .then(() => {
       //on success show the controls to stop and cancel the recording
+      console.log('Recording Audio Started');
       if (onRecordingStart) {
         onRecordingStart(true);
       }
@@ -341,3 +342,48 @@ export const audioRecorder: AudioRecorder = {
     getEventListeners(audioRecorder.mediaRecorder) will return an empty array of events.*/
   },
 };
+
+// --------- Speech Recognition (Speech-to-Text) API ---------
+type SpeechToTextOptions = {
+  lang?: string;
+  onResult: (text: string) => void;
+  onStart?: () => void;
+  onEnd?: () => void;
+  onError?: (error: string) => void;
+};
+
+let recognition: any = null;
+
+export function isSpeechRecognitionSupported() {
+  return !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+}
+
+export function startSpeechRecognition({ lang = 'en-US', onResult, onStart, onEnd, onError }: SpeechToTextOptions) {
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    if (onError) onError('Speech-to-text only works on Chrome.');
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = lang;
+  recognition.onresult = (event: any) => {
+    const text = event.results[0][0].transcript;
+    onResult(text);
+  };
+  recognition.onerror = (event: any) => {
+    if (onError) onError(event.error || 'Speech recognition error');
+  };
+  recognition.onend = () => {
+    if (onEnd) onEnd();
+  };
+  recognition.onstart = () => {
+    if (onStart) onStart();
+  };
+  recognition.start();
+}
+
+export function stopSpeechRecognition() {
+  if (recognition) recognition.stop();
+}

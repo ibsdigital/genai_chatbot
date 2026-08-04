@@ -12,7 +12,8 @@ export class ChatInputHistory {
 
   constructor(
     private getMaxHistory: () => number = () => 10,
-    private storage: ChatHistoryStorage = localStorage,
+
+    private storage: ChatHistoryStorage = sessionStorage,
   ) {
     this.maxHistory = this.getMaxHistory() ?? 10;
     this.loadHistory();
@@ -68,7 +69,7 @@ export class ChatInputHistory {
     try {
       this.storage.setItem('chatInputHistory', JSON.stringify(this.history));
     } catch (error: unknown) {
-      console.warn('Failed to save chat history to localStorage:', error instanceof Error ? error.message : error);
+      console.warn('Failed to save chat history to sessionStorage:', error instanceof Error ? error.message : error);
     }
   }
 
@@ -80,7 +81,7 @@ export class ChatInputHistory {
         this.history = Array.isArray(parsed) ? parsed : [];
       }
     } catch (error: unknown) {
-      console.warn('Failed to load chat history from localStorage:', error instanceof Error ? error.message : error);
+      console.warn('Failed to load chat history from sessionStorage:', error instanceof Error ? error.message : error);
     }
   }
 }
