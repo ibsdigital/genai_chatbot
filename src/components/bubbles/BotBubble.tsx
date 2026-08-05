@@ -22,7 +22,7 @@ import { getCompanyConfig, CompanyConfig } from '@/window';
 import { TTSButton } from '../buttons/TTSButton';
 import DOMPurify from 'dompurify';
 
-const receiveAudioUrl = '/assets/receive_message.mp3';
+// const receiveAudioUrl = '/assets/receive_message.mp3';
 
 type Props = {
   message: MessageType;
@@ -439,14 +439,14 @@ export const BotBubble = (props: Props) => {
     }
   };
 
-  // Play receive sound when component mounts (SOLIDJS SAFETY)
-  onMount(() => {
-    // Only play sound if we're not in a loading state
-    if (!props.isLoading) {
-      const receiveSound = new Audio(receiveAudioUrl);
-      receiveSound.play().catch((e) => console.error('Error playing receive sound:', e));
-    }
-  });
+  // // Play receive sound when component mounts (SOLIDJS SAFETY)
+  // onMount(() => {
+  //   // Only play sound if we're not in a loading state
+  //   if (!props.isLoading) {
+  //     const receiveSound = new Audio(receiveAudioUrl);
+  //     receiveSound.play().catch((e) => console.error('Error playing receive sound:', e));
+  //   }
+  // });
 
   onMount(() => {
     if (botDetailsEl && props.isLoading) {
