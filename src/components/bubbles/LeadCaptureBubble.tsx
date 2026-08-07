@@ -45,7 +45,7 @@ export const LeadCaptureBubble = (props: Props) => {
   const config = getCompanyConfig();
   if (!config) return null;
 
-  return config.lead_capture_message ? <CustomMessageVariant {...props} /> : <DefaultVariant {...props} />;
+  return <>{config.lead_capture_message ? <CustomMessageVariant {...props} /> : <DefaultVariant {...props} />}</>;
 };
 
 // ─── AMS Neve variant (custom_message: true) ─────────────────────────────────
