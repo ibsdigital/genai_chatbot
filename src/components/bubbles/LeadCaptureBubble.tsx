@@ -27,19 +27,21 @@ type Props = {
 };
 
 // ─── Schema for the custom_message (AMS Neve) variant ────────────────────────
-const CustomLeadCaptureSchema = z.object({
-  firstName: z.string().optional(),
-  email: z.string().min(1, 'Email is required').email('Please provide a valid email'),
-});
+const CustomLeadCaptureSchema = (firstNameOptional: boolean) =>
+  z.object({
+    firstName: firstNameOptional ? z.string().optional() : z.string().min(1, 'First name is required'),
+    email: z.string().min(1, 'Email is required').email('Please provide a valid email'),
+  });
 
 // ─── Schema for the default variant ──────────────────────────────────────────
-const DefaultLeadCaptureSchema = z.object({
-  firstName: z.string().optional(),
-  email: z.string().min(1, 'Email is required').email('Please provide a valid email'),
-  consentCheckbox: z.boolean().refine((val) => val === true, {
-    message: 'Please accept the terms & conditions to proceed.',
-  }),
-});
+const DefaultLeadCaptureSchema = (firstNameOptional: boolean) =>
+  z.object({
+    firstName: firstNameOptional ? z.string().optional() : z.string().min(1, 'First name is required'),
+    email: z.string().min(1, 'Email is required').email('Please provide a valid email'),
+    consentCheckbox: z.boolean().refine((val) => val === true, {
+      message: 'Please accept the terms & conditions to proceed.',
+    }),
+  });
 
 export const LeadCaptureBubble = (props: Props) => {
   const config = getCompanyConfig();
@@ -64,7 +66,7 @@ const CustomMessageVariant = (props: Props) => {
     const firstName = (formData.get('firstName') as string) ?? '';
     const email = (formData.get('email') as string) ?? '';
 
-    const res = CustomLeadCaptureSchema.safeParse({ firstName, email });
+    const res = CustomLeadCaptureSchema(config.firstname_optional ?? true).safeParse({ firstName, email });
     if (!res.success) {
       setFieldErrors(res.error.flatten().fieldErrors);
       return;
@@ -267,7 +269,8 @@ const CustomMessageVariant = (props: Props) => {
               <input
                 type="text"
                 name="firstName"
-                placeholder="First Name (optional)"
+                required={config.firstname_optional === false}
+                placeholder={config.firstname_optional === false ? 'First Name (required)' : 'First Name (optional)'}
                 style={{
                   'background-color': '#FFFFFF',
                   border: `1px solid ${fieldErrors().firstName ? '#ef4444' : '#E0E0E0'}`,
@@ -386,7 +389,7 @@ const DefaultVariant = (props: Props) => {
 
     const formValues = { firstName, email, consentCheckbox: consentGiven };
 
-    const res = DefaultLeadCaptureSchema.safeParse(formValues);
+    const res = DefaultLeadCaptureSchema(config.firstname_optional ?? true).safeParse(formValues);
     if (!res.success) {
       const error = res.error.flatten();
       setLeadFormError(error.fieldErrors);
@@ -474,7 +477,8 @@ const DefaultVariant = (props: Props) => {
             <div class="w-full">
               <input
                 class="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-                placeholder="First Name (optional)"
+                placeholder={config.firstname_optional === false ? 'First Name (required)' : 'First Name (optional)'}
+                required={config.firstname_optional === false}
                 name="firstName"
                 value={leadFirstName()}
                 onChange={(e) => setLeadFirstName(e.currentTarget.value)}

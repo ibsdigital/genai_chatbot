@@ -40,6 +40,7 @@ export type CompanyConfig = {
     hideSources?: boolean;
     lead_capture_message?: boolean;
     tooltipMessage?: string;
+    firstname_optional?: boolean;
 };
 export declare function getCompanyConfig(): CompanyConfig | null;
 export declare function setCompanyConfigStore(config: CompanyConfig): void;

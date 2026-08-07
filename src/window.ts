@@ -46,6 +46,7 @@ export type CompanyConfig = {
   hideSources?: boolean;
   lead_capture_message?: boolean;
   tooltipMessage?: string;
+  firstname_optional?: boolean;
 };
 
 const CONFIG_STORAGE_KEY = 'companyConfig';
