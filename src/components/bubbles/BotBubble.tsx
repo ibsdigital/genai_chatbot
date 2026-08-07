@@ -703,7 +703,7 @@ export const BotBubble = (props: Props) => {
             </div>
           </div>
 
-          {/* Sources - Show automatically when available AND streaming is complete */}
+          {/* Sources - Show automatically when available AND streaming is complete
           <Show when={!props.hideSources && props.message.sourceDocuments && props.message.sourceDocuments.length > 0 && hasStreamed()}>
             <div class="mt-1 mb-2 ml-2" data-sources-container={props.message.messageId || uniqueKey}>
               <Show when={props.sourceDocsTitle}>
@@ -785,7 +785,7 @@ export const BotBubble = (props: Props) => {
                 </For>
               </div>
             </div>
-          </Show>
+          </Show> */}
 
           {props.message.action && (
             <div class="px-4 py-2 flex flex-row justify-start space-x-2">

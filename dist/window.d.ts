@@ -38,6 +38,8 @@ export type CompanyConfig = {
     questions?: string[];
     quickActions?: string[];
     hideSources?: boolean;
+    lead_capture_message?: boolean;
+    tooltipMessage?: string;
 };
 export declare function getCompanyConfig(): CompanyConfig | null;
 export declare function setCompanyConfigStore(config: CompanyConfig): void;
