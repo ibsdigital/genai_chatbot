@@ -1,0 +1,1 @@
+{"version":3,"file":"MeetingDetailsInline.d.ts","sourceRoot":"","sources":["../../../src/components/bubbles/MeetingDetailsInline.tsx"],"names":[],"mappings":"AAEA,KAAK,yBAAyB,GAAG;IAC/B,WAAW,EAAE,GAAG,CAAC;IACjB,YAAY,CAAC,EAAE,MAAM,CAAC;IACtB,yBAAyB,CAAC,EAAE,MAAM,CAAC;IACnC,mBAAmB,CAAC,EAAE,MAAM,CAAC;CAC9B,CAAC;AAoCF,eAAO,MAAM,oBAAoB,UAAW,yBAAyB,mCAgKpE,CAAC"}

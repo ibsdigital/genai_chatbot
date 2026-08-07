@@ -61,6 +61,7 @@ export type AgentFlowExecutedData = {
 };
 export type MessageType = {
     messageId?: string;
+    external_chat_msg_id?: string;
     message: string;
     type: messageType;
     sourceDocuments?: any;
@@ -80,13 +81,19 @@ export type MessageType = {
     thinking?: string;
     thinkingDuration?: number;
     isThinking?: boolean;
+    meetingData?: {
+        client_meeting_time?: string;
+        client_meeting_date?: string;
+        client_meeting_timezone?: string;
+        client_name?: string;
+        client_email?: string;
+    };
 };
 type observerConfigType = (accessor: string | boolean | object | MessageType[]) => void;
 export type observersConfigType = Record<'observeUserInput' | 'observeLoading' | 'observeMessages', observerConfigType>;
 export type BotProps = {
     chatflowid: string;
     apiHost?: string;
-    pageTitle?: string;
     onRequest?: (request: RequestInit) => Promise<void>;
     chatflowConfig?: Record<string, unknown>;
     backgroundColor?: string;
@@ -116,23 +123,27 @@ export type BotProps = {
     starterPrompts?: string[] | Record<string, {
         prompt: string;
     }>;
+    quickActions?: string[];
     starterPromptFontSize?: number;
     clearChatOnReload?: boolean;
     disclaimer?: DisclaimerPopUpTheme;
     dateTimeToggle?: DateTimeToggleTheme;
     renderHTML?: boolean;
     closeBot?: () => void;
+    isExpand?: boolean;
+    pageTitle?: string;
     hasCustomHeader?: boolean;
     dialogContainer?: HTMLElement;
 };
 export type LeadsConfig = {
     status: boolean;
     title?: string;
-    name?: boolean;
+    firstName?: boolean;
     email?: boolean;
-    phone?: boolean;
+    consentCheckbox?: any;
     successMessage?: string;
 };
+export declare function renderTemplate(template: string, data: Record<string, any>): string;
 export declare const Bot: (botProps: BotProps & {
     class?: string;
 }) => import("solid-js").JSX.Element;

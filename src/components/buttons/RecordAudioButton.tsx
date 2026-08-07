@@ -1,29 +1,35 @@
 import { Show } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
 import { RecordIcon } from '../icons';
+import { StopIcon } from '../icons/StopIcon';
 
 type RecordAudioButtonProps = {
   buttonColor?: string;
   isDisabled?: boolean;
   isLoading?: boolean;
+  isRecording?: boolean;
   disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const RecordAudioButton = (props: RecordAudioButtonProps) => {
   return (
     <button
-      type="submit"
+      type="button"
       disabled={props.isDisabled || props.isLoading}
       {...props}
       class={
-        'py-2 px-4 justify-center font-semibold focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 chatbot-button ' +
+        'pt-2 pb-4 pl-2 pr-0 h-[50px] justify-center font-semibold focus:outline-none flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:brightness-100 transition-all filter hover:brightness-90 active:brightness-75 chatbot-button ' +
+        (props.isRecording ? 'animate-pulse ' : '') +
         props.class
       }
       style={{ background: 'transparent', border: 'none' }}
     >
       <Show when={!props.isLoading} fallback={<Spinner class="text-white" />}>
-        <RecordIcon color={props.buttonColor} />
+        <Show when={!props.isRecording} fallback={<StopIcon color={'#F00'} />}>
+          <RecordIcon color={props.buttonColor} />
+        </Show>
       </Show>
+      {props.children}
     </button>
   );
 };

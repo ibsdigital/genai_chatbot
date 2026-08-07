@@ -74,27 +74,32 @@ export const sendRequest = async <ResponseData>(
   }
 };
 
-export const setLocalStorageChatflow = (chatflowid: string, chatId: string, saveObj: Record<string, any> = {}) => {
-  const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
+/**
+ * Per-chatflow storage backed by sessionStorage (clears when the tab/browser
+ * session ends). Key is always dynamic: `${chatflowid}_EXTERNAL`.
+ * Never hardcode this key — every caller must pass the real chatflowid.
+ */
+export const setSessionStorageChatflow = (chatflowid: string, chatId: string, saveObj: Record<string, any> = {}) => {
+  const chatDetails = sessionStorage.getItem(`${chatflowid}_EXTERNAL`);
   const obj = { ...saveObj };
   if (chatId) obj.chatId = chatId;
 
   if (!chatDetails) {
-    localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
+    sessionStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
   } else {
     try {
       const parsedChatDetails = JSON.parse(chatDetails);
-      localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify({ ...parsedChatDetails, ...obj }));
+      sessionStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify({ ...parsedChatDetails, ...obj }));
     } catch (e) {
       const chatId = chatDetails;
       obj.chatId = chatId;
-      localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
+      sessionStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
     }
   }
 };
 
-export const getLocalStorageChatflow = (chatflowid: string) => {
-  const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
+export const getSessionStorageChatflow = (chatflowid: string) => {
+  const chatDetails = sessionStorage.getItem(`${chatflowid}_EXTERNAL`);
   if (!chatDetails) return {};
   try {
     return JSON.parse(chatDetails);
@@ -103,20 +108,21 @@ export const getLocalStorageChatflow = (chatflowid: string) => {
   }
 };
 
-export const removeLocalStorageChatHistory = (chatflowid: string) => {
-  const chatDetails = localStorage.getItem(`${chatflowid}_EXTERNAL`);
+export const removeSessionStorageChatHistory = (chatflowid: string) => {
+  const chatDetails = sessionStorage.getItem(`${chatflowid}_EXTERNAL`);
   if (!chatDetails) return;
   try {
     const parsedChatDetails = JSON.parse(chatDetails);
-    if (parsedChatDetails.lead) {
-      // Dont remove lead when chat is cleared
-      const obj = { lead: parsedChatDetails.lead };
-      localStorage.removeItem(`${chatflowid}_EXTERNAL`);
-      localStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
-    } else {
-      localStorage.removeItem(`${chatflowid}_EXTERNAL`);
+    // Preserve both token and lead
+    const obj: any = {};
+    if (parsedChatDetails.token) obj.token = parsedChatDetails.token;
+    if (parsedChatDetails.lead) obj.lead = parsedChatDetails.lead;
+    sessionStorage.removeItem(`${chatflowid}_EXTERNAL`);
+    if (Object.keys(obj).length) {
+      sessionStorage.setItem(`${chatflowid}_EXTERNAL`, JSON.stringify(obj));
     }
   } catch (e) {
+    console.error(e);
     return;
   }
 };

@@ -1,4 +1,3 @@
-import { FeedbackRatingType } from '@/queries/sendMessageQuery';
 import { IAction, MessageType } from '../Bot';
 import { DateTimeToggleTheme } from '@/features/bubble/types';
 type Props = {
@@ -19,13 +18,13 @@ type Props = {
     dateTimeToggle?: DateTimeToggleTheme;
     showAgentMessages?: boolean;
     sourceDocsTitle?: string;
+    hideSources?: boolean;
     renderHTML?: boolean;
+    shouldStream?: boolean;
+    isWelcomeMessage?: boolean;
+    isFirstMessage?: boolean;
     handleActionClick: (elem: any, action: IAction | undefined | null) => void;
     handleSourceDocumentsClick: (src: any) => void;
-    onRegenerateResponse?: () => void;
-    onMessageRendered?: () => void;
-    messageRatings?: Record<string, FeedbackRatingType>;
-    onMessageRatingChange?: (messageId: string, rating: FeedbackRatingType) => void;
     isTTSEnabled?: boolean;
     isTTSLoading?: Record<string, boolean>;
     isTTSPlaying?: Record<string, boolean>;

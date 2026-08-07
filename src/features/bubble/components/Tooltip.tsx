@@ -47,8 +47,12 @@ const Tooltip = (props: TooltipProps) => {
       <div
         class="tooltip"
         style={{
-          right: `calc(${props.position.right}px + 20px)`,
-          bottom: `${props.position.bottom + props.buttonSize + 10}px`,
+          // Reduced gap: only 8px between tooltip and button
+          right: `calc(${props.position.right}px + ${props.buttonSize}px + 8px)`,
+          // Perfect center alignment: position tooltip center with button center
+          bottom: `${props.position.bottom + props.buttonSize / 2}px`,
+          // Use transform to center the tooltip vertically
+          transform: 'translateY(50%)',
           '--tooltip-background-color': backgroundColor,
           '--tooltip-text-color': textColor,
           '--tooltip-font-size': fontSize,

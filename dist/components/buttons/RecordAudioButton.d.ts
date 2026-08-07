@@ -3,6 +3,7 @@ type RecordAudioButtonProps = {
     buttonColor?: string;
     isDisabled?: boolean;
     isLoading?: boolean;
+    isRecording?: boolean;
     disableIcon?: boolean;
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>;
 export declare const RecordAudioButton: (props: RecordAudioButtonProps) => JSX.Element;

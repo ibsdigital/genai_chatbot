@@ -1,6 +1,7 @@
 import { createContext, useContext, JSXElement, Show, For, createEffect, mergeProps } from 'solid-js';
 import { createStore } from 'solid-js/store';
 import { Dynamic } from 'solid-js/web';
+// import './TreeView.css';
 
 // TreeView Context Type
 type TreeViewContextType = {
@@ -40,7 +41,7 @@ const ChevronRightIcon = () => (
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    style={{ transition: 'transform 0.2s' }}
+    class="transition-transform duration-200"
   >
     <path d="m9 18 6-6-6-6" />
   </svg>
@@ -57,7 +58,7 @@ const ChevronDownIcon = () => (
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    style={{ transition: 'transform 0.2s' }}
+    class="transition-transform duration-200"
   >
     <path d="m6 9 6 6 6-6" />
   </svg>
@@ -192,62 +193,10 @@ export const RichTreeView = (props: RichTreeViewProps) => {
     isHighlighted,
   };
 
-  // Add a style block for dynamic indentation and hover effects
+  // Add a style block for dynamic indentation
   const treeViewStyle = `
     .tree-item-children {
       padding-left: ${mergedProps.indentationLevel}px !important;
-    }
-    .tree-item-content {
-      display: flex;
-      align-items: center;
-      padding: 0.5rem 0.25rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-      border-left: 3px solid transparent;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-    .tree-item-icon-container {
-      margin-right: 0.25rem;
-    }
-    .tree-item-icon {
-      margin-right: 0.5rem;
-    }
-    .tree-item-label {
-      flex-grow: 1;
-    }
-    .tree-item-content:hover {
-      background-color: rgba(0, 0, 0, 0.06);
-    }
-    .tree-item-content.selected {
-      background-color: rgba(25, 118, 210, 0.12);
-      border-left-color: #1976d2;
-    }
-    .tree-item-content.selected:hover {
-      background-color: rgba(25, 118, 210, 0.2);
-    }
-    .tree-item-content.highlighted {
-      background-color: rgba(255, 193, 7, 0.1);
-    }
-    .expand-detail-btn {
-      padding: 4px;
-      border-radius: 4px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      color: inherit;
-      display: flex;
-      align-items: center;
-      opacity: 0.4;
-      transition: opacity 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
-    }
-    .expand-detail-btn:hover {
-      opacity: 1;
-      background-color: rgba(0, 0, 0, 0.08);
-      transform: scale(1.15);
-    }
-    .status-icon {
-      display: flex;
-      align-items: center;
     }
   `;
 
@@ -296,18 +245,20 @@ export const TreeItem = (props: TreeItemProps) => {
   return (
     <div class="tree-item-root">
       <div
-        class={`tree-item-content ${context.isSelected(props.itemId) ? 'selected' : ''} ${context.isHighlighted(props.itemId) ? 'highlighted' : ''}`}
+        class={`tree-item-content flex items-center py-2 px-1 rounded cursor-pointer ${context.isSelected(props.itemId) ? 'selected' : ''} ${
+          context.isHighlighted(props.itemId) ? 'highlighted' : ''
+        }`}
         onClick={handleClick}
       >
-        <div class="tree-item-icon-container">
+        <div class="tree-item-icon-container mr-1">
           {!isLeaf && <Dynamic component={context.isExpanded(props.itemId) ? ChevronDownIcon : ChevronRightIcon} />}
         </div>
 
-        <div class="tree-item-icon">
+        <div class="tree-item-icon mr-2">
           {props.icon ? props.icon : props.expandedIcon && context.isExpanded(props.itemId) ? props.expandedIcon : getDefaultIcon()}
         </div>
 
-        <div class="tree-item-label">{props.label}</div>
+        <div class="tree-item-label flex-grow">{props.label}</div>
 
         <Show when={props.endIcon}>
           <div class="tree-item-end-icon">{props.endIcon}</div>

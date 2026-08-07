@@ -1,30 +1,60 @@
 import { observersConfigType } from './components/Bot';
 import { BubbleTheme } from './features/bubble/types';
+export type CompanyConfig = {
+    leadTitleMessage: string;
+    leadCaptureMessage: string;
+    name: string;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    website: string;
+    contactUs: string;
+    title: string;
+    placeholder: string;
+    welcomeMessage: string;
+    errorMessage: string;
+    logo: string;
+    chatIcon: string;
+    colors: {
+        primary: string;
+        secondary: string;
+        white: string;
+        black: string;
+        lightGrey: string;
+        botMessageBackgroundColor: string;
+        botMessageTextColor: string;
+    };
+    dimensions: {
+        height: number;
+        width: number;
+        buttonSize: number;
+    };
+    privacyPolicy: string;
+    terms: string;
+    supportedBy: {
+        name: string;
+        link: string;
+    };
+    questions?: string[];
+    quickActions?: string[];
+    hideSources?: boolean;
+};
+export declare function getCompanyConfig(): CompanyConfig | null;
+export declare function setCompanyConfigStore(config: CompanyConfig): void;
+export declare function fetchAndInitCompanyConfig(apiHost?: string, tenant_uuid?: string): Promise<void>;
 type BotProps = {
     chatflowid: string;
     apiHost?: string;
-    pageTitle?: string;
+    tenant_uuid?: string;
     onRequest?: (request: RequestInit) => Promise<void>;
     chatflowConfig?: Record<string, unknown>;
     observersConfig?: observersConfigType;
     theme?: BubbleTheme;
-    /**
-     * Portal target for NodeDetailsDialog. When provided, the dialog renders
-     * into this element (outside the shadow DOM) so that `position: fixed` and
-     * `z-index` operate in the host page's stacking context.
-     *
-     * Works with both `init` (bubble) and `initFull` (full-page) embed modes.
-     * In bubble mode, falls back to the bubble's own container when not supplied.
-     *
-     * Accepts either a CSS selector string (resolved via `document.querySelector`)
-     * or a plain `HTMLElement` reference.
-     */
-    dialogContainer?: string | HTMLElement;
 };
 export declare const initFull: (props: BotProps & {
     id?: string;
-}) => void;
-export declare const init: (props: BotProps) => void;
+}) => Promise<void>;
+export declare const init: (props: BotProps) => Promise<void>;
 export declare const destroy: () => void;
 export declare const clearChat: (id?: string) => void;
 type Chatbot = {
@@ -36,8 +66,8 @@ type Chatbot = {
 export declare const parseChatbot: () => {
     initFull: (props: BotProps & {
         id?: string;
-    }) => void;
-    init: (props: BotProps) => void;
+    }) => Promise<void>;
+    init: (props: BotProps) => Promise<void>;
     destroy: () => void;
     clearChat: (id?: string) => void;
 };

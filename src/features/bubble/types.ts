@@ -79,6 +79,7 @@ export type ChatWindowTheme = {
   sourceDocsTitle?: string;
   poweredByTextColor?: string;
   starterPrompts?: string[];
+  quickActions?: string[];
   starterPromptFontSize?: number;
   clearChatOnReload?: boolean;
   dateTimeToggle?: DateTimeToggleTheme;

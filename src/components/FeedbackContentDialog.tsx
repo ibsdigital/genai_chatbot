@@ -6,6 +6,7 @@ type FeedbackContentDialogProps = {
   onSubmit: (text: string) => void;
   backgroundColor?: string;
   textColor?: string;
+  primaryColor?: string;
 };
 
 const defaultBackgroundColor = '#ffffff';

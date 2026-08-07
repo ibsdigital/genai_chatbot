@@ -2,25 +2,23 @@ declare const chatbot: {
     initFull: (props: {
         chatflowid: string;
         apiHost?: string | undefined;
-        pageTitle?: string | undefined;
+        tenant_uuid?: string | undefined;
         onRequest?: ((request: RequestInit) => Promise<void>) | undefined;
         chatflowConfig?: Record<string, unknown> | undefined;
         observersConfig?: import("./components/Bot").observersConfigType | undefined;
         theme?: import(".").BubbleTheme | undefined;
-        dialogContainer?: string | HTMLElement | undefined;
     } & {
         id?: string | undefined;
-    }) => void;
+    }) => Promise<void>;
     init: (props: {
         chatflowid: string;
         apiHost?: string | undefined;
-        pageTitle?: string | undefined;
+        tenant_uuid?: string | undefined;
         onRequest?: ((request: RequestInit) => Promise<void>) | undefined;
         chatflowConfig?: Record<string, unknown> | undefined;
         observersConfig?: import("./components/Bot").observersConfigType | undefined;
         theme?: import(".").BubbleTheme | undefined;
-        dialogContainer?: string | HTMLElement | undefined;
-    }) => void;
+    }) => Promise<void>;
     destroy: () => void;
     clearChat: (id?: string | undefined) => void;
 };

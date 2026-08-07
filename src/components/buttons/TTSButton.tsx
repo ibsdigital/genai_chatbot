@@ -67,7 +67,7 @@ export const TTSButton = (props: Props) => {
         }
       >
         <Show when={!props.isPlaying} fallback={<CircleDotIcon color="red" />}>
-          <VolumeIcon color={props.isPlaying ? 'white' : props.feedbackColor ?? defaultButtonColor} />
+          <VolumeIcon color={props.isPlaying ? 'white' : (props.feedbackColor ?? defaultButtonColor)} />
         </Show>
       </Show>
     </button>

@@ -1,5 +1,10 @@
-import { WorkflowNode } from './workflowUtils';
-export type { WorkflowNode };
+export type WorkflowNode = {
+    nodeId: string;
+    nodeLabel: string;
+    data: any;
+    previousNodeIds: string[];
+    status: 'FINISHED' | 'PENDING' | 'RUNNING' | 'ERROR' | 'INPROGRESS' | 'STOPPED';
+};
 type WorkflowTreeViewProps = {
     workflowData: WorkflowNode[];
     class?: string;
@@ -16,4 +21,5 @@ type WorkflowTreeViewProps = {
     dialogContainer?: HTMLElement;
 };
 export declare const WorkflowTreeView: (props: WorkflowTreeViewProps) => import("solid-js").JSX.Element;
+export {};
 //# sourceMappingURL=WorkflowTreeView.d.ts.map

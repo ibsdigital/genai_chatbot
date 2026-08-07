@@ -13,6 +13,7 @@ export type IncomingInput = {
 };
 type BaseRequest = {
     apiHost?: string;
+    tenant_uuid?: string;
     onRequest?: (request: RequestInit) => Promise<void>;
 };
 export type MessageRequest = BaseRequest & {
@@ -34,9 +35,23 @@ export type UpdateFeedbackRequest = BaseRequest & {
     id: string;
     body?: Partial<FeedbackInput>;
 };
+export type MessageFeedbackInput = {
+    thumbs_up: boolean;
+    thumbs_down: boolean;
+    feedback: string;
+    inaccurate?: boolean;
+    inappropriate?: boolean;
+    helpful?: boolean;
+};
+export type SubmitMessageFeedbackRequest = BaseRequest & {
+    chatflowid: string;
+    externalChatMsgId: string;
+    body: MessageFeedbackInput;
+};
 export type UpsertRequest = BaseRequest & {
     chatflowid: string;
     apiHost?: string;
+    tenant_uuid?: string;
     formData: FormData;
 };
 export type LeadCaptureInput = {
@@ -44,7 +59,7 @@ export type LeadCaptureInput = {
     chatId: string;
     name?: string;
     email?: string;
-    phone?: string;
+    consentCheckbox?: any;
 };
 export type LeadCaptureRequest = BaseRequest & {
     body: Partial<LeadCaptureInput>;
@@ -74,8 +89,15 @@ export declare const updateFeedbackQuery: ({ id, apiHost, body, onRequest }: Upd
     error?: Error | undefined;
 }>;
 export declare const sendMessageQuery: ({ chatflowid, apiHost, body, onRequest }: MessageRequest) => Promise<{
-    data?: any;
-    error?: Error | undefined;
+    error: {
+        message: any;
+        status: any;
+        errorCode: any;
+    };
+    data?: undefined;
+} | {
+    data: any;
+    error?: undefined;
 }>;
 export declare const createAttachmentWithFormData: ({ chatflowid, apiHost, formData, onRequest }: UpsertRequest) => Promise<{
     data?: unknown;
@@ -97,10 +119,11 @@ export declare const sendFileDownloadQuery: ({ apiHost, body, onRequest }: Messa
     data?: any;
     error?: Error | undefined;
 }>;
-export declare const addLeadQuery: ({ apiHost, body, onRequest }: LeadCaptureRequest) => Promise<{
-    data?: any;
+export declare const submitMessageFeedbackQuery: ({ chatflowid, apiHost, externalChatMsgId, body, onRequest, }: SubmitMessageFeedbackRequest) => Promise<{
+    data?: unknown;
     error?: Error | undefined;
 }>;
+export declare function fetchAuthToken(name: string, email: string, apiHost?: string): Promise<string>;
 export declare const generateTTSQuery: ({ apiHost, body, onRequest, signal }: GenerateTTSRequest) => Promise<Response>;
 export declare const abortTTSQuery: ({ apiHost, body, onRequest }: AbortTTSRequest) => Promise<{
     data?: any;

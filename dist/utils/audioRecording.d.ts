@@ -17,5 +17,15 @@ type AudioRecorder = {
     resetRecordingProperties: () => void;
 };
 export declare const audioRecorder: AudioRecorder;
+type SpeechToTextOptions = {
+    lang?: string;
+    onResult: (text: string) => void;
+    onStart?: () => void;
+    onEnd?: () => void;
+    onError?: (error: string) => void;
+};
+export declare function isSpeechRecognitionSupported(): boolean;
+export declare function startSpeechRecognition({ lang, onResult, onStart, onEnd, onError }: SpeechToTextOptions): void;
+export declare function stopSpeechRecognition(): void;
 export {};
 //# sourceMappingURL=audioRecording.d.ts.map

@@ -1,0 +1,29 @@
+{
+  "name": "IBS Digital",
+  "fullName": "IBS Digital",
+  "firstName": "IBS",
+  "lastName": "Digital",
+  "website": "https://ibsdigital.io/",
+  "contactUs": "https://ibsdigital.io/contact",
+  "title": "IBS Digital",
+  "placeholder": "Message IBS Digital...",
+  "welcomeMessage": "Welcome! I'm here to help with any questions about IBS Digital.",
+  "errorMessage": "Unable to connect with chat server. Please try again later.",
+  "logo": "/LogoIBSDigital.png",
+  "chatIcon": "/BotAiChatIcon.svg",
+  "leadTitleMessage":"Hi there! I'm here to help with any questions about IBS Digital. What can I help you with today?",
+  "colors": {
+    "primary": "#FB8105",
+    "secondary": "#14213C",
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "lightGrey": "#EBEBEB"
+  },
+  "dimensions": {
+    "height": 550,
+    "width": 450,
+    "buttonSize": 56
+  },
+  "privacyPolicy": "https://ibsdigital.io/privacy-policy/",
+  "terms": "https://ibsdigital.io/term-of-use/"
+}

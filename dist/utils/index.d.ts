@@ -15,9 +15,14 @@ export declare const sendRequest: <ResponseData>(params: string | {
     data?: ResponseData | undefined;
     error?: Error | undefined;
 }>;
-export declare const setLocalStorageChatflow: (chatflowid: string, chatId: string, saveObj?: Record<string, any>) => void;
-export declare const getLocalStorageChatflow: (chatflowid: string) => any;
-export declare const removeLocalStorageChatHistory: (chatflowid: string) => void;
+/**
+ * Per-chatflow storage backed by sessionStorage (clears when the tab/browser
+ * session ends). Key is always dynamic: `${chatflowid}_EXTERNAL`.
+ * Never hardcode this key — every caller must pass the real chatflowid.
+ */
+export declare const setSessionStorageChatflow: (chatflowid: string, chatId: string, saveObj?: Record<string, any>) => void;
+export declare const getSessionStorageChatflow: (chatflowid: string) => any;
+export declare const removeSessionStorageChatHistory: (chatflowid: string) => void;
 export declare const getBubbleButtonSize: (size: 'small' | 'medium' | 'large' | number | undefined) => number;
 export declare const setCookie: (cname: string, cvalue: string, exdays: number) => void;
 export declare const getCookie: (cname: string) => string;

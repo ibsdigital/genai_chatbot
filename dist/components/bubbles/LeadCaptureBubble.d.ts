@@ -14,6 +14,10 @@ type Props = {
     isLeadSaved: boolean;
     setIsLeadSaved: (value: boolean) => void;
     setLeadEmail: (value: string) => void;
+    setLeadFirstName: (value: string) => void;
+    setIsConsentGiven: (value: boolean) => void;
+    isExpand?: boolean;
+    addPersonalizedWelcome: (firstName: string) => void;
 };
 export declare const LeadCaptureBubble: (props: Props) => import("solid-js").JSX.Element;
 export {};
