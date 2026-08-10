@@ -126,6 +126,8 @@ type BotProps = {
   chatflowConfig?: Record<string, unknown>;
   observersConfig?: observersConfigType;
   theme?: BubbleTheme;
+  tooltipMessage?: string;
+  context?: string;
 };
 
 export const initFull = async (props: BotProps & { id?: string }) => {
@@ -180,6 +182,10 @@ export const init = async (props: BotProps) => {
     console.log(`rops.theme.chatWindow?.quickActions ${props.theme.chatWindow?.quickActions}`);
   }
 
+  if (props.tooltipMessage && props.theme.tooltip) {
+    props.theme.tooltip.tooltipMessage = props.tooltipMessage;
+  }
+
   Object.assign(element, props);
   document.body.appendChild(element);
   elementUsed = element;
@@ -202,7 +208,7 @@ const generateDefaultTheme = (config: CompanyConfig): BubbleTheme => {
     },
     tooltip: {
       showTooltip: true,
-      tooltipMessage: config.tooltipMessage ?? 'Hi There! How can I help you?',
+      tooltipMessage: config.tooltipMessage ?? 'Setup and Integration Assistant',
       tooltipBackgroundColor: config.colors.black,
       tooltipTextColor: config.colors.white,
       tooltipFontSize: 16,
