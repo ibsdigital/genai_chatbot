@@ -6,6 +6,7 @@ node_modules
 .vscode/
 .venv/
 venv/
+dist/
 
 backend/database/postgres/
 database/postgres/
