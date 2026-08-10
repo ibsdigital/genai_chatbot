@@ -1,1 +1,0 @@
-{"version":3,"file":"chatbotConfig.d.ts","sourceRoot":"","sources":["../../src/store/chatbotConfig.ts"],"names":[],"mappings":"AAEA,MAAM,MAAM,mBAAmB,GAAG;IAChC,OAAO,EAAE,MAAM,CAAC;IAChB,WAAW,EAAE,MAAM,CAAC;CACrB,CAAC;AAEF,QAAA,MAAO,OAAO,8CAAE,UAAU,0CAAqC,CAAC;AAChE,QAAA,MAAO,UAAU,8CAAE,aAAa,0CAAqC,CAAC;AAEtE,OAAO,EAAE,OAAO,EAAE,UAAU,EAAE,UAAU,EAAE,aAAa,EAAE,CAAC"}

@@ -44,6 +44,9 @@ export type CompanyConfig = {
   questions?: string[];
   quickActions?: string[];
   hideSources?: boolean;
+  lead_capture_message?: boolean;
+  tooltipMessage?: string;
+  firstname_optional?: boolean;
 };
 
 const CONFIG_STORAGE_KEY = 'companyConfig';
@@ -199,7 +202,7 @@ const generateDefaultTheme = (config: CompanyConfig): BubbleTheme => {
     },
     tooltip: {
       showTooltip: true,
-      tooltipMessage: 'Hi There! How can I help you?',
+      tooltipMessage: config.tooltipMessage ?? 'Hi There! How can I help you?',
       tooltipBackgroundColor: config.colors.black,
       tooltipTextColor: config.colors.white,
       tooltipFontSize: 16,

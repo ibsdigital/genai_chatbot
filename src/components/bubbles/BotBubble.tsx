@@ -704,7 +704,15 @@ export const BotBubble = (props: Props) => {
           </div>
 
           {/* Sources - Show automatically when available AND streaming is complete */}
-          <Show when={!props.hideSources && props.message.sourceDocuments && props.message.sourceDocuments.length > 0 && hasStreamed()}>
+          <Show
+            when={
+              !config()?.hideSources &&
+              !props.hideSources &&
+              props.message.sourceDocuments &&
+              props.message.sourceDocuments.length > 0 &&
+              hasStreamed()
+            }
+          >
             <div class="mt-1 mb-2 ml-2" data-sources-container={props.message.messageId || uniqueKey}>
               <Show when={props.sourceDocsTitle}>
                 <span class="px-2 py-1 font-semibold text-sm text-gray-600">{props.sourceDocsTitle}</span>
