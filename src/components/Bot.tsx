@@ -1440,26 +1440,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         return;
       }
     }
-
-    if (uploads?.length > 0) {
-      setMessages((data) => {
-        const messages = data.map((item, i) => {
-          if (i === data.length - 2 && item.type === 'userMessage') {
-            if (item.fileUploads) {
-              const fileUploads = item?.fileUploads.map((file) => ({
-                type: file.type,
-                name: file.name,
-                mime: file.mime,
-              }));
-              return { ...item, fileUploads };
-            }
-          }
-          return item;
-        });
-        addChatMessage(messages);
-        return [...messages];
-      });
-    }
   };
 
   const onSubmitResponse = (actionData: any, feedback = '', type = '') => {
