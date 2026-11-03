@@ -10,6 +10,8 @@ import {
   createAttachmentWithFormData,
   generateTTSQuery,
   abortTTSQuery,
+  uploadChatImages,
+  ChatImageUpload,
 } from '@/queries/sendMessageQuery';
 import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
@@ -1339,6 +1341,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
 
+    // Images go straight to S3; the chat request only carries their S3 keys.
+    const images = uploads.filter((upload) => upload.mime.startsWith('image/') && typeof upload.data === 'string');
+    let imageUploads: ChatImageUpload[] = [];
+    if (images.length) {
+      try {
+        imageUploads = await uploadChatImages({
+          chatflowid: props.chatflowid,
+          apiHost: props.apiHost,
+          images: images.map((image) => ({ data: image.data as string, name: image.name, mime: image.mime })),
+        });
+      } catch (error) {
+        handleError((error as Error).message, true);
+        return;
+      }
+    }
+
     clearPreviews();
 
     setMessages((prevMessages) => {
@@ -1364,7 +1382,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       email: leadEmail(),
       category: 'General',
       external_chat_id: externalChatId() || null,
-      uploads,
+      uploads: imageUploads,
       // Add any conditionals as needed:
       // form: formData,
       // overrideConfig: props.chatflowConfig,

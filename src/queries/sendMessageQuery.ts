@@ -152,6 +152,112 @@ export const sendMessageQuery = async ({ chatflowid, apiHost = 'http://localhost
   return { data };
 };
 
+export type ChatImageUpload = {
+  type: string;
+  name: string;
+  mime: string;
+  s3_key: string;
+};
+
+type ChatImageUploadUrl = {
+  s3_key: string;
+  upload_url: string;
+  mime: string;
+};
+
+type UploadChatImagesRequest = BaseRequest & {
+  chatflowid?: string;
+  images: { data: string; name: string; mime: string }[];
+};
+
+const dataUrlToBlob = (dataUrl: string, mime: string) => {
+  const binary = atob(dataUrl.split(',', 2)[1] ?? '');
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+};
+
+// Claude downscales images past 1568px on the long side, so bigger ones only cost upload time.
+const MAX_IMAGE_SIDE = 1568;
+const SHRINK_ABOVE_BYTES = 1024 * 1024;
+
+/**
+ * Re-encodes a large image as a JPEG of at most MAX_IMAGE_SIDE; small images and GIFs are
+ * sent as they are, so screenshots stay sharp. Any failure falls back to the original.
+ */
+const shrinkImage = async (blob: Blob): Promise<Blob> => {
+  if (blob.type === 'image/gif') return blob;
+  try {
+    const bitmap = await createImageBitmap(blob);
+    const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+    if (scale === 1 && blob.size <= SHRINK_ABOVE_BYTES) return blob;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const context = canvas.getContext('2d');
+    if (!context) return blob;
+    // JPEG has no transparency: without this, transparent areas turn black.
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const shrunk = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+    return shrunk && shrunk.size < blob.size ? shrunk : blob;
+  } catch {
+    return blob;
+  }
+};
+
+/**
+ * Uploads the attached images straight to S3 and returns them as guided chat uploads.
+ * The chat request then carries only the S3 keys: a base64 image in its body is blocked by the WAF.
+ */
+export const uploadChatImages = async ({
+  chatflowid,
+  apiHost = 'http://localhost:3000',
+  images,
+}: UploadChatImagesRequest): Promise<ChatImageUpload[]> => {
+  const stored = chatflowid ? getSessionStorageChatflow(chatflowid) : {};
+  const token = stored?.token || '';
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const files = await Promise.all(
+    images.map(async (image) => {
+      // The backend accepts image/jpeg only; some browsers report .jpg files as image/jpg.
+      const mime = image.mime === 'image/jpg' ? 'image/jpeg' : image.mime;
+      const blob = await shrinkImage(dataUrlToBlob(image.data, mime));
+      return { name: image.name, mime: blob.type, blob };
+    }),
+  );
+
+  const { data, error } = await sendRequest<ChatImageUploadUrl[]>({
+    method: 'POST',
+    url: `${apiHost}/api/v1/respond/upload-url`,
+    body: { files: files.map((file) => ({ name: file.name, mime: file.mime, size: file.blob.size })) },
+    headers,
+  });
+  if (error || !data) {
+    throw new Error((error as any)?.message || 'Unable to upload images. Please try again.');
+  }
+
+  await Promise.all(
+    data.map(async (target, i) => {
+      const failed = new Error(`Unable to upload ${files[i].name}. Please try again.`);
+      // A network or CORS failure rejects with a bare "Failed to fetch".
+      const response = await fetch(target.upload_url, {
+        method: 'PUT',
+        headers: { 'Content-Type': target.mime },
+        body: files[i].blob,
+      }).catch(() => {
+        throw failed;
+      });
+      if (!response.ok) throw failed;
+    }),
+  );
+
+  return data.map((target, i) => ({ type: 'file', name: files[i].name, mime: target.mime, s3_key: target.s3_key }));
+};
+
 export const createAttachmentWithFormData = ({ chatflowid, apiHost = 'http://localhost:3000', formData, onRequest }: UpsertRequest) =>
   sendRequest({
     method: 'POST',
