@@ -153,15 +153,14 @@ export const sendMessageQuery = async ({ chatflowid, apiHost = 'http://localhost
 };
 
 export type ChatImageUpload = {
-  type: string;
   name: string;
-  mime: string;
   s3_key: string;
 };
 
 type ChatImageUploadUrl = {
   s3_key: string;
   upload_url: string;
+  fields: Record<string, string>;
   mime: string;
 };
 
@@ -243,19 +242,19 @@ export const uploadChatImages = async ({
   await Promise.all(
     data.map(async (target, i) => {
       const failed = new Error(`Unable to upload ${files[i].name}. Please try again.`);
+      // The signed fields go first: S3 ignores any field after the file.
+      const form = new FormData();
+      Object.entries(target.fields).forEach(([key, value]) => form.append(key, value));
+      form.append('file', files[i].blob, files[i].name);
       // A network or CORS failure rejects with a bare "Failed to fetch".
-      const response = await fetch(target.upload_url, {
-        method: 'PUT',
-        headers: { 'Content-Type': target.mime },
-        body: files[i].blob,
-      }).catch(() => {
+      const response = await fetch(target.upload_url, { method: 'POST', body: form }).catch(() => {
         throw failed;
       });
       if (!response.ok) throw failed;
     }),
   );
 
-  return data.map((target, i) => ({ type: 'file', name: files[i].name, mime: target.mime, s3_key: target.s3_key }));
+  return data.map((target, i) => ({ name: files[i].name, s3_key: target.s3_key }));
 };
 
 export const createAttachmentWithFormData = ({ chatflowid, apiHost = 'http://localhost:3000', formData, onRequest }: UpsertRequest) =>
