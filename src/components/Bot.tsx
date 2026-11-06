@@ -10,6 +10,8 @@ import {
   createAttachmentWithFormData,
   generateTTSQuery,
   abortTTSQuery,
+  uploadChatImages,
+  ChatImageUpload,
 } from '@/queries/sendMessageQuery';
 import { TextInput } from './inputs/textInput';
 import { GuestBubble } from './bubbles/GuestBubble';
@@ -529,16 +531,14 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
   const [starterPrompts, setStarterPrompts] = createSignal<string[]>([], { equals: false });
   const [chatFeedbackStatus, setChatFeedbackStatus] = createSignal<boolean>(false);
   const [fullFileUpload, setFullFileUpload] = createSignal<boolean>(false);
-  const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>();
-
   // For Image upload functionality
-  // const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>({
-  //   isImageUploadAllowed: true,
-  //   isRAGFileUploadAllowed: false,
-  //   isSpeechToTextEnabled: false,
-  //   imgUploadSizeAndTypes: [{ fileTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'], maxUploadSize: 5 }],
-  //   fileUploadSizeAndTypes: [],
-  // });
+  const [uploadsConfig, setUploadsConfig] = createSignal<UploadsConfig>({
+    isImageUploadAllowed: true,
+    isRAGFileUploadAllowed: false,
+    isSpeechToTextEnabled: false,
+    imgUploadSizeAndTypes: [{ fileTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'], maxUploadSize: 5 }],
+    fileUploadSizeAndTypes: [],
+  });
 
   const [leadsConfig, setLeadsConfig] = createSignal<LeadsConfig>();
   const [isLeadSaved, setIsLeadSaved] = createSignal(!!getSessionStorageChatflow(props.chatflowid)?.lead);
@@ -1341,6 +1341,22 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       return;
     }
 
+    // Images go straight to S3; the chat request only carries their S3 keys.
+    const images = uploads.filter((upload) => upload.mime.startsWith('image/') && typeof upload.data === 'string');
+    let imageUploads: ChatImageUpload[] = [];
+    if (images.length) {
+      try {
+        imageUploads = await uploadChatImages({
+          chatflowid: props.chatflowid,
+          apiHost: props.apiHost,
+          images: images.map((image) => ({ data: image.data as string, name: image.name, mime: image.mime })),
+        });
+      } catch (error) {
+        handleError((error as Error).message, true);
+        return;
+      }
+    }
+
     clearPreviews();
 
     setMessages((prevMessages) => {
@@ -1366,9 +1382,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
       email: leadEmail(),
       category: 'General',
       external_chat_id: externalChatId() || null,
+      uploads: imageUploads,
       // Add any conditionals as needed:
       // form: formData,
-      // uploads,
       // overrideConfig: props.chatflowConfig,
       // action,
       // humanInput,
@@ -1441,26 +1457,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
         setLoading(false);
         return;
       }
-    }
-
-    if (uploads?.length > 0) {
-      setMessages((data) => {
-        const messages = data.map((item, i) => {
-          if (i === data.length - 2 && item.type === 'userMessage') {
-            if (item.fileUploads) {
-              const fileUploads = item?.fileUploads.map((file) => ({
-                type: file.type,
-                name: file.name,
-                mime: file.mime,
-              }));
-              return { ...item, fileUploads };
-            }
-          }
-          return item;
-        });
-        addChatMessage(messages);
-        return [...messages];
-      });
     }
   };
 
@@ -1875,11 +1871,23 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     return acceptFile;
   };
 
+  const MAX_IMAGES_PER_MESSAGE = 3;
+
+  // Images already attached plus the new ones must stay within the limit.
+  const isWithinImageLimit = (incomingCount: number) => {
+    if (previews().length + incomingCount > MAX_IMAGES_PER_MESSAGE) {
+      alert(`You can attach up to ${MAX_IMAGES_PER_MESSAGE} images per message.`);
+      return false;
+    }
+    return true;
+  };
+
   const handleFileChange = async (event: FileEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) {
       return;
     }
+    if (!isWithinImageLimit(files.length)) return;
     const filesList = [];
     const uploadedFiles = [];
     for (const file of files) {
@@ -1953,6 +1961,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     const files = [];
     const uploadedFiles = [];
     if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+      if (!isWithinImageLimit(e.dataTransfer.files.length)) return;
       for (const file of e.dataTransfer.files) {
         if (isFileAllowedForUpload(file) === false) {
           return;
